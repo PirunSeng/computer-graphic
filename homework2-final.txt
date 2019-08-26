@@ -1,0 +1,183 @@
+#include<windows.h>
+#include <GL/glut.h>
+#include <GL/glu.h>
+#include <GL/gl.h>
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
+
+bool lightOneEnable = true;
+bool lightTwoEnable = true;
+bool lightThreeEnable = true;
+GLfloat angle1, angle2, angle3;
+
+static void key(unsigned char key, int x, int y)
+{
+    switch (key)
+    {
+        case 'q':
+            exit(0);
+            break;
+        case '1':
+            lightOneEnable = glIsEnabled(GL_LIGHT1);
+            if (lightOneEnable) {
+                glDisable(GL_LIGHT1);
+            } else {
+                glEnable(GL_LIGHT1);
+            }
+            break;
+        case '2':
+            lightTwoEnable = glIsEnabled(GL_LIGHT2);
+            if (lightTwoEnable) {
+                glDisable(GL_LIGHT2);
+            } else {
+                glEnable(GL_LIGHT2);
+            }
+            break;
+        case '3':
+            lightThreeEnable = glIsEnabled(GL_LIGHT3);
+            if (lightThreeEnable) {
+                glDisable(GL_LIGHT3);
+            } else {
+                glEnable(GL_LIGHT3);
+            }
+            break;
+
+        case 'x':
+            // rotate camera along X
+            angle2 = angle2 + 0.1;
+            break;
+        case 'y':
+            // rotate camera along Y
+            angle1 = angle1 + 0.1;
+            break;
+        case 'z':
+            // rotate camera along Z
+            angle3 = angle3 + 0.1;
+            break;
+    }
+
+    glutPostRedisplay();
+}
+
+void drawGoldSphere() {
+    GLfloat mat_specular[] = { 0.628281, 0.555802, 0.366065, 1.0 };
+    GLfloat mat_shininess[] = { 51.2 };
+    GLfloat mat_ambient[] = { 0.24725, 0.1995, 0.0745, 1.0 };
+    GLfloat mat_diffuse[] = { 0.75164, 0.60648, 0.22648, 1.0 };
+    //Material Properties
+    glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+    glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+}
+
+void drawSilverSphere() {
+    GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+    GLfloat mat_shininess[] = { 51.2 };
+    GLfloat mat_ambient[] = { 0.19225, 0.19225, 0.19225, 1.0 };
+    GLfloat mat_diffuse[] = { 0.50754, 0.50754, 0.50754, 1.0 };
+    //Material Properties
+    glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+    glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+}
+
+void init(void)
+{
+    GLfloat white_light[] = { 1.0, 1.0, 1.0, 1.0 };
+    // light from top right
+    GLfloat light_position_top_right[] = { 1.5, 1.5, 1.0, 1.0 };
+    // bottom left
+    GLfloat light_position_bottom_left[] = { -1.5, -1.5, 1.0, 1.0 };
+    // bottom right
+    GLfloat light_position_bottom_right[] = { 1.5, -1.5, 1.0, 1.0 };
+
+    GLfloat light_position_top_middle[] = { 0, 1.5, 1.0, 0.0 };
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position_top_middle);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, white_light);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, white_light);
+
+    glLightfv(GL_LIGHT1, GL_POSITION, light_position_top_right);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, white_light);
+    glLightfv(GL_LIGHT1, GL_SPECULAR, white_light);
+
+    GLfloat spot_direction_1[] = { -1.0, -1.0, 0.0 };
+    glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 45.0);
+    glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, spot_direction_1);
+
+    glLightfv(GL_LIGHT2, GL_POSITION, light_position_bottom_left);
+    glLightfv(GL_LIGHT2, GL_DIFFUSE, white_light);
+    glLightfv(GL_LIGHT2, GL_SPECULAR, white_light);
+
+    GLfloat spot_direction_2[] = { 1.0, 1.0, 0.0 };
+    glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 45.0);
+    glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, spot_direction_2);
+
+    glLightfv(GL_LIGHT3, GL_POSITION, light_position_bottom_right);
+    glLightfv(GL_LIGHT3, GL_DIFFUSE, white_light);
+    glLightfv(GL_LIGHT3, GL_SPECULAR, white_light);
+
+    GLfloat spot_direction_3[] = { -1.0, 1.0, 0.0 };
+    glLightf(GL_LIGHT3, GL_SPOT_CUTOFF, 45.0);
+    glLightfv(GL_LIGHT3, GL_SPOT_DIRECTION, spot_direction_3);
+
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_LIGHT1);
+    glEnable(GL_LIGHT2);
+    glEnable(GL_LIGHT3);
+    glEnable(GL_DEPTH_TEST);
+}
+
+void display(void)
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glRotatef(angle1, 1.0, 0.0, 0.0);
+    glRotatef(angle2, 0.0, 1.0, 0.0);
+    glRotatef(angle3, 0.0, 0.0, 1.0);
+
+    drawSilverSphere();
+    glPushMatrix();
+    glTranslatef(0.5, 0.3, 0.0);
+    glutSolidTeapot(0.5);
+    glPopMatrix();
+
+    drawGoldSphere();
+    glPushMatrix();
+    glTranslatef(-0.75, 0.3, 0.0);
+    glutSolidSphere(0.5, 50, 50);
+    glPopMatrix();
+
+    glFlush();
+}
+void reshape(int w, int h)
+{
+    glViewport(0, 0, (GLsizei) w, (GLsizei) h);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+
+    if (w <= h)
+    glOrtho(-1.5, 1.5, -1.5*(GLfloat)h/(GLfloat)w,
+    1.5*(GLfloat)h/(GLfloat)w, -1.0, 3.0);
+    else
+    glOrtho(-1.5*(GLfloat)w/(GLfloat)h,
+    1.5*(GLfloat)w/(GLfloat)h, -1.5, 1.5, -1, 3.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+}
+int main(int argc, char** argv)
+{
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
+    glutInitWindowSize(500, 500);
+    glutInitWindowPosition(100, 100);
+    glutCreateWindow(argv[0]);
+    init();
+    glutDisplayFunc(display);
+    glutReshapeFunc(reshape);
+    glutKeyboardFunc(key);
+    glutMainLoop();
+    return 0;
+}
